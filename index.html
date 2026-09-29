@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Frontend 1.0</title>
+</head>
+<body>
+  <h1>Frontend 1.0</h1>
+
+  <input type="text" id="inputText" placeholder="Введите текст..." />
+  <button id="submitBtn">Отправить</button>
+
+  <p id="status"></p>
+
+  <script>
+    const API_URL = "http://127.0.0.1:5000/submit";
+
+    document.getElementById("submitBtn").addEventListener("click", async () => {
+      const text = document.getElementById("inputText").value;
+      const statusEl = document.getElementById("status");
+
+      if (!text) {
+        statusEl.textContent = "Введите текст!";
+        return;
+      }
+
+      try {
+        const response = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: text })
+        });
+        const data = await response.json();
+        statusEl.textContent = "Ответ сервера: " + JSON.stringify(data);
+      } catch (error) {
+        statusEl.textContent = "Ошибка: " + error.message;
+      }
+    });
+  </script>
+</body>
+</html>
