@@ -2,18 +2,31 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <title>Frontend 1.0</title>
+  <title>Frontend 2.0</title>
 </head>
 <body>
-  <h1>Frontend 1.0</h1>
+  <h1>Frontend 2.0</h1>
 
-  <input type="text" id="inputText" placeholder="Введите текст..." />
-  <button id="submitBtn">Отправить</button>
+  <div class="block">
+    <h2>Отправка данных</h2>
+    <input type="text" id="inputText" placeholder="Введите текст..." />
+    <button id="submitBtn">Отправить</button>
+    <p id="status"></p>
+  </div>
 
-  <p id="status"></p>
+  <div class="block">
+    <h2>Чтение данных из файла</h2>
+    <input type="text" id="readInput"
+           placeholder="Нажмите «Прочитать», чтобы получить содержимое data.txt"
+           readonly />
+    <button id="readBtn">Прочитать</button>
+    <p>Содержимое data.txt:</p>
+    <textarea id="filecontent" readonly></textarea>
+  </div>
 
   <script>
     const API_URL = "http://127.0.0.1:5000/submit";
+    const READ_URL = "http://127.0.0.1:5000/read";
 
     document.getElementById("submitBtn").addEventListener("click", async () => {
       const text = document.getElementById("inputText").value;
@@ -34,6 +47,27 @@
         statusEl.textContent = "Ответ сервера: " + JSON.stringify(data);
       } catch (error) {
         statusEl.textContent = "Ошибка: " + error.message;
+      }
+    });
+
+    document.getElementById("readBtn").addEventListener("click", async () => {
+      const readInput = document.getElementById("readInput");
+      const fileContentEl = document.getElementById("filecontent");
+
+      try {
+        const response = await fetch(READ_URL, { method: "GET" });
+        const data = await response.json();
+
+        if (data.status === "ok") {
+          readInput.value = "Данные успешно получены";
+          fileContentEl.value = data.content || "(файл пуст)";
+        } else {
+          readInput.value = "Ошибка при чтении";
+          fileContentEl.value = "";
+        }
+      } catch (error) {
+        readInput.value = "Ошибка: " + error.message;
+        fileContentEl.value = "";
       }
     });
   </script>
